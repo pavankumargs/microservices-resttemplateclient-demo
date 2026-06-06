@@ -1,6 +1,7 @@
 package com.pavan.microservices.employee.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,19 +15,40 @@ import com.pavan.microservices.employee.dto.Employee;
 @RestController
 @RequestMapping("/employeeclient")
 public class EmployeeClientController {
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
-	
-	@GetMapping("/{id}")
-	public Employee getEmployeeByID(@PathVariable Long id) {
-		Employee employee = restTemplate.getForObject("http://localhost:8080/employee/"+id, Employee.class);
-		return employee;
-	}
-	
+
+	/*
+	 * below method is the basic getForObject() method used to basic get calls. if
+	 * you need only response body then we can use getForObject() Method it doesn't
+	 * support status code and headers
+	 */
+
+//	@GetMapping("/{id}")
+//	public Employee getEmployeeByID(@PathVariable Long id) {
+//		Employee employee = restTemplate.getForObject("http://localhost:8080/employee/"+id, Employee.class);
+//		return employee;
+//	}
+
 	@PostMapping
 	public Employee createEmployee(@RequestBody Employee employee) {
 		Employee employe = restTemplate.postForObject("http://localhost:8080/employee", employee, Employee.class);
 		return employe;
+	}
+
+	/*
+	 * getForEntity() Method Example
+	 * 
+	 * we can include status code and headers also
+	 */
+
+	@GetMapping("/{id}")
+	public Employee getEmpById(@PathVariable Long id) {
+		ResponseEntity<Employee> response = restTemplate.getForEntity("http://localhost:8080/employee/" + id,
+				Employee.class);
+		System.out.println(response.getHeaders());
+		System.out.println(response.getStatusCode());
+		return response.getBody();
 	}
 }
