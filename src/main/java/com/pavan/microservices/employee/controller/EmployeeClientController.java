@@ -1,6 +1,9 @@
 package com.pavan.microservices.employee.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,12 +46,28 @@ public class EmployeeClientController {
 	 * we can include status code and headers also
 	 */
 
+//	@GetMapping("/{id}")
+//	public Employee getEmpById(@PathVariable Long id) {
+//		ResponseEntity<Employee> response = restTemplate.getForEntity("http://localhost:8080/employee/" + id,
+//				Employee.class);
+//		System.out.println(response.getHeaders());
+//		System.out.println(response.getStatusCode());
+//		return response.getBody();
+//	}
+	
+	/*
+	 * exchange() method we can send any request with full control it supports
+	 * get,post,put,delete and it gives status code, response body and headers
+	 */
+	
 	@GetMapping("/{id}")
-	public Employee getEmpById(@PathVariable Long id) {
-		ResponseEntity<Employee> response = restTemplate.getForEntity("http://localhost:8080/employee/" + id,
-				Employee.class);
-		System.out.println(response.getHeaders());
+	public Employee getEmployeeByID(@PathVariable Long id) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json");
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		ResponseEntity<Employee> response = restTemplate.exchange("http://localhost:8080/employee/"+id, HttpMethod.GET, entity, Employee.class);
 		System.out.println(response.getStatusCode());
+		System.out.println(response.getHeaders());
 		return response.getBody();
 	}
 }
